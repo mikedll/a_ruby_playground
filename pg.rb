@@ -14,17 +14,8 @@ conn = PG.connect(dbname: 'baseball')
 #   end
 # end
 
-statement_name = "insert"
-
-['Mike Gonzales', 'Sally Sitwell'].each do |name|
-  begin
-    conn.exec("DEALLOCATE #{statement_name}")
-  rescue PG::InvalidSqlStatementName => e
-    # okay
-  end
-  
-  conn.prepare(statement_name, 'insert into players (name) values ($1)')
-  conn.exec_prepared(statement_name, [name]) do |res|
+['Alex Smith', 'Alex Jones'].each do |name|
+  conn.exec_params('insert into players (name) values ($1)', [name]) do |res|
     res.each do |row|
       puts row
     end
@@ -32,9 +23,7 @@ statement_name = "insert"
 
 end
 
-conn.prepare('my_statement', 'select * from players limit $1')
-
-conn.exec_prepared("my_statement", [20]) do |result|
+conn.exec_params("select * from players where name like $1", ['Alex%']) do |result|
   result.each do |row|
     puts "#{row['id']}, #{row['name']}"
   end
