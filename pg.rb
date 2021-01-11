@@ -14,16 +14,22 @@ conn = PG.connect(dbname: 'baseball')
 #   end
 # end
 
-statment_counter = 0
+statement_name = "insert"
+
 ['Mike Gonzales', 'Sally Sitwell'].each do |name|
-  conn.prepare("insert#{statment_counter}", 'insert into players (name) values ($1)')
-  conn.exec_prepared("insert#{statment_counter}", [name]) do |res|
+  begin
+    conn.exec("DEALLOCATE #{statement_name}")
+  rescue PG::InvalidSqlStatementName => e
+    # okay
+  end
+  
+  conn.prepare(statement_name, 'insert into players (name) values ($1)')
+  conn.exec_prepared(statement_name, [name]) do |res|
     res.each do |row|
       puts row
     end
   end
 
-  statment_counter += 1
 end
 
 conn.prepare('my_statement', 'select * from players limit $1')
