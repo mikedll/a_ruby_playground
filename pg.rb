@@ -14,18 +14,30 @@ conn = PG.connect(dbname: 'baseball')
 #   end
 # end
 
-['Alex Smith', 'Alex Jones'].each do |name|
-  conn.exec_params('insert into players (name) values ($1)', [name]) do |res|
-    res.each do |row|
-      puts row
-    end
-  end
+# ['Alex Smith', 'Alex Jones'].each do |name|
+#   conn.exec_params('insert into players (name) values ($1)', [name]) do |res|
+#     res.each do |row|
+#       puts row
+#     end
+#   end
 
-end
+# end
 
-conn.exec_params("select * from players where name like $1", ['Alex%']) do |result|
+# conn.exec_params("select * from players where name like $1", ['Alex%']) do |result|
+#   result.each do |row|
+#     puts "#{row['id']}, #{row['name']}"
+#   end
+# end
+
+# conn.exec_params("select * from players where name like $1", ['Mike%']) do |result|
+#   result.each do |row|
+#     puts "#{row['id']}, #{row['name']}"
+#   end
+# end
+
+conn.exec_params("insert into players (name) values ($1) returning id", ['Ricky Ricardo']) do |result|
   result.each do |row|
-    puts "#{row['id']}, #{row['name']}"
+    puts "#{row['id']}"
   end
 end
 
